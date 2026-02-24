@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinaco Elige | Epistecnología</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --azul: #1a237e; --rojo: #d32f2f; --blanco: #ffffff;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+        
+        body {
+            margin: 0; font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--azul) 0%, #303f9f 50%, var(--rojo) 100%);
+            background-attachment: fixed; color: #333;
+        }
+
+        /* Efecto Flotante Gen Z */
+        .glass-card {
+            background: var(--glass); backdrop-filter: blur(10px);
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+
+        /* Navegación de Pantallas */
+        .screen { display: none; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        .active { display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fadeIn 0.5s ease; }
+
+        /* Estilo de Tarjetas */
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; max-width: 1200px; }
+        .card-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px 15px 0 0; }
+        
+        /* Botones */
+        .btn-main {
+            background: var(--azul); color: white; border: none; padding: 15px 30px;
+            border-radius: 50px; cursor: pointer; font-weight: bold; text-transform: uppercase;
+            letter-spacing: 1px; transition: 0.3s;
+        }
+        .btn-main:hover { background: var(--rojo); transform: scale(1.05); }
+
+        /* Popups */
+        .info-panel { display: none; padding: 15px; background: #f8f9fa; font-size: 0.9em; border-radius: 10px; margin-top: 10px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        footer { margin-top: 40px; text-align: center; color: white; padding: 20px; }
+        .social-links i { font-size: 1.5rem; margin: 0 10px; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<section id="screen-intro" class="screen active">
+    <div class="glass-card" style="max-width: 500px; padding: 40px; text-align: center;">
+        <h1 style="color: var(--azul)">¡Hola Tinaco! 🗳️</h1>
+        <p>Participa en la elección de nuestros símbolos naturales. Tu voto es auditado y contribuye a la divulgación científica.</p>
+        <button class="btn-main" onclick="nextScreen('screen-geo')">Empezar</button>
+    </div>
+</section>
+
+<section id="screen-geo" class="screen">
+    <div class="glass-card" style="padding: 30px; text-align: center;">
+        <h2>¿Desde dónde nos visitas?</h2>
+        <p>Para asegurar la transparencia, selecciona tu sector:</p>
+        <select id="user-zone" style="padding: 10px; border-radius: 10px; width: 250px;">
+            <option value="Casco Central">Casco Central</option>
+            <option value="Lomas del Viento">Lomas del Viento</option>
+            <option value="San Luis">San Luis</option>
+            <option value="El Pao">El Pao</option>
+            <option value="Sabana Larga">Sabana Larga</option>
+        </select>
+        <br><br>
+        <button class="btn-main" onclick="saveGeo()">Confirmar Ubicación</button>
+    </div>
+</section>
+
+<section id="screen-selector" class="screen">
+    <h2 style="color: white">¿Qué deseas elegir primero?</h2>
+    <div class="grid-cards" style="max-width: 700px;">
+        <div class="glass-card" style="padding: 20px; text-align: center;" onclick="startVoto('aves')">
+            <i class="fas fa-dove fa-3x" style="color: var(--azul)"></i>
+            <h3>Aves</h3>
+        </div>
+        <div class="glass-card" style="padding: 20px; text-align: center;" onclick="startVoto('flores')">
+            <i class="fas fa-seedling fa-3x" style="color: var(--rojo)"></i>
+            <h3>Flores</h3>
+        </div>
+    </div>
+</section>
+
+<section id="screen-aves" class="screen">
+    <h2 style="color: white">Selecciona el Ave Símbolo</h2>
+    <div class="grid-cards" id="container-aves"></div>
+</section>
+
+<section id="screen-flores" class="screen">
+    <h2 style="color: white">Selecciona la Flor Símbolo</h2>
+    <div class="grid-cards" id="container-flores"></div>
+</section>
+
+<section id="screen-social" class="screen">
+    <div class="glass-card" style="max-width: 500px; padding: 40px; text-align: center;">
+        <h2 style="color: var(--azul)">Paso Final</h2>
+        <p>Para confirmar tu voto, apoya la divulgación científica suscribiéndote a nuestro canal:</p>
+        <a href="https://www.youtube.com/@epistecnologia?sub_confirmation=1" target="_blank" class="btn-main" style="background: #ff0000; text-decoration: none; display: inline-block;" onclick="enableFinish()">
+            <i class="fab fa-youtube"></i> Suscribirse a Epistecnología
+        </a>
+        <br><br>
+        <button id="btn-finalizar" class="btn-main" disabled onclick="finalizarTodo()">Finalizar y Ver Resultados</button>
+    </div>
+</section>
+
+<section id="screen-results" class="screen">
+    <div class="glass-card" style="width: 90%; max-width: 1000px; padding: 20px;">
+        <h2 style="text-align: center;">Gracias por votar</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+            <div style="width: 400px;"><canvas id="chartAves"></canvas></div>
+            <div style="width: 400px;"><canvas id="chartFlores"></canvas></div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <p>Comparte esta iniciativa:</p>
+            <div class="social-links" style="color: var(--azul)">
+                <i class="fab fa-whatsapp"></i><i class="fab fa-facebook"></i><i class="fab fa-instagram"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>Desarrollado por <span class="brand">Epistecnología</span></p>
+</footer>
+
+<script>
+    // Configuración de Datos
+    const dataAves = [
+        {id: 'carpintero', nombre: 'Carpintero', img: 'https://i.ibb.co/kg3YG0dP/large.jpg', desc: 'Ave conocida por su golpeteo rítmico en los árboles.'},
+        {id: 'sangretoro', nombre: 'Sangre toro', img: 'https://i.ibb.co/NnGg1Q86/900.jpg', desc: 'Destaca por su plumaje rojo vibrante.'},
+        {id: 'cristofue', nombre: 'CristoFue', img: 'https://i.ibb.co/nNLYqT3M/900.jpg', desc: 'Su canto parece decir su nombre: ¡Cristo Fue!'},
+        {id: 'gaban', nombre: 'El Gaban', img: 'https://i.ibb.co/HTL8cxgG/43dac00274fc4fe2e1f4ced2ce7f8459.jpg', desc: 'Símbolo de elegancia en los esteros.'},
+        {id: 'alcaravan', nombre: 'Alcaravan', img: 'https://inaturalist-open-data.s3.amazonaws.com/photos/135057906/large.jpeg', desc: 'Guardián nocturno de la sabana.'}
+    ];
+
+    const dataFlores = [
+        {id: 'lirio', nombre: 'Lirio Sabanero', img: 'https://images.unsplash.com/photo-1597430302648-97171d1e43e7?auto=format&fit=crop&w=400', desc: 'Blanco puro de nuestros llanos.'},
+        {id: 'orquidea', nombre: 'Orquídea Rabo e Mono', img: 'https://images.unsplash.com/photo-1599380630790-25e62846f888?auto=format&fit=crop&w=400', desc: 'Especie epífita única y exótica.'},
+        {id: 'bototo', nombre: 'Bototo', img: 'https://images.unsplash.com/photo-1524147023055-5bc77b74495c?auto=format&fit=crop&w=400', desc: 'Flor amarilla brillante muy resistente.'},
+        {id: 'nazareno', nombre: 'Nazareno', img: 'https://images.unsplash.com/photo-1567608285969-48e3ca032924?auto=format&fit=crop&w=400', desc: 'Púrpura intenso de gran belleza.'},
+        {id: 'cimbapotro', nombre: 'Cimbapotro', img: 'https://images.unsplash.com/photo-1464332521191-423588e1e70d?auto=format&fit=crop&w=400', desc: 'Flor silvestre emblemática de la zona.'}
+    ];
+
+    let votoAves = null;
+    let votoFlores = null;
+    let zonaUsuario = "";
+
+    // Navegación
+    function nextScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function saveGeo() {
+        zonaUsuario = document.getElementById('user-zone').value;
+        nextScreen('screen-selector');
+    }
+
+    function startVoto(cat) {
+        if(cat === 'aves') { renderCards(dataAves, 'container-aves', 'aves'); nextScreen('screen-aves'); }
+        else { renderCards(dataFlores, 'container-flores', 'flores'); nextScreen('screen-flores'); }
+    }
+
+    // Renderizado de Tarjetas
+    function renderCards(lista, containerId, tipo) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+        lista.forEach(item => {
+            const card = document.createElement('div');
+            card.className = "glass-card";
+            card.innerHTML = `
+                <img src="${item.img}" class="card-img">
+                <div class="card-body">
+                    <h3>${item.nombre}</h3>
+                    <button class="btn-main" style="background:#eee; color:#333; margin-bottom:5px;" onclick="toggleInfo('${item.id}')">Ver +</button>
+                    <div id="info-${item.id}" class="info-panel">${item.desc}</div>
+                    ${tipo === 'aves' ? '<button class="btn-main" style="background:#ddd; color:#333; margin-top:5px;"><i class="fas fa-volume-up"></i> Sonido</button>' : ''}
+                    <button class="btn-main" style="margin-top:10px;" onclick="seleccionar('${tipo}', '${item.nombre}')">Votar</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function toggleInfo(id) {
+        const p = document.getElementById('info-'+id);
+        p.style.display = p.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function seleccionar(tipo, nombre) {
+        if(tipo === 'aves') votoAves = nombre;
+        else votoFlores = nombre;
+
+        if(votoAves && votoFlores) nextScreen('screen-social');
+        else nextScreen('screen-selector');
+    }
+
+    function enableFinish() {
+        setTimeout(() => {
+            document.getElementById('btn-finalizar').disabled = false;
+            document.getElementById('btn-finalizar').style.background = 'var(--accent)';
+        }, 2000);
+    }
+
+    function finalizarTodo() {
+        // Aquí se enviaría a Supabase en el futuro
+        nextScreen('screen-results');
+        renderCharts();
+    }
+
+    function renderCharts() {
+        new Chart(document.getElementById('chartAves'), {
+            type: 'doughnut',
+            data: { labels: dataAves.map(a => a.nombre), datasets: [{ data: [12, 19, 3, 5, 2], backgroundColor: ['#1a237e', '#d32f2f', '#fdd835', '#4caf50', '#8e24aa'] }] },
+            options: { plugins: { title: { display: true, text: 'Aves (%)' } } }
+        });
+        new Chart(document.getElementById('chartFlores'), {
+            type: 'polarArea',
+            data: { labels: dataFlores.map(f => f.nombre), datasets: [{ data: [5, 12, 8, 15, 10], backgroundColor: ['#ff8a65', '#9575cd', '#fff176', '#81c784', '#64b5f6'] }] },
+            options: { plugins: { title: { display: true, text: 'Flores (%)' } } }
+        });
+    }
+</script>
+
+</body>
+</html>
